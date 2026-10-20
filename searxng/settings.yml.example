@@ -1,0 +1,29 @@
+# Copy this file to config/settings.yml on the host and generate a unique
+# secret_key. Never commit the real settings.yml.
+#
+#   mkdir -p ~/searxng/config
+#   cp settings.yml.example ~/searxng/config/settings.yml
+#   secret=$(openssl rand -hex 32)
+#   sed -i "s|__GENERATE_WITH_OPENSSL_RAND_HEX_32__|$secret|" \
+#       ~/searxng/config/settings.yml
+#   chmod 600 ~/searxng/config/settings.yml
+#
+# The real file is mounted read-only into the SearXNG container.
+use_default_settings: true
+
+general:
+  instance_name: "Homelab SearXNG"
+
+server:
+  bind_address: "0.0.0.0"
+  port: 8080
+  base_url: "https://search.example.test/"
+  secret_key: "__GENERATE_WITH_OPENSSL_RAND_HEX_32__"
+  # Limiter requires Redis; this private LAN instance runs without it.
+  limiter: false
+  public_instance: false
+  image_proxy: false
+
+search:
+  safe_search: 0
+  autocomplete: ""

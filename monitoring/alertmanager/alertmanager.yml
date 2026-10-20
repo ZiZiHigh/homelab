@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 5m
+
+# No notification receiver is configured. Alerts are visible in the
+# Alertmanager UI at https://alerts.example.test/ (LAN only). Add an email or
+# webhook receiver only after deciding the destination and storing its secret.
+route:
+  receiver: "null"
+  group_by: ['alertname', 'instance']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  - name: "null"

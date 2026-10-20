@@ -1,0 +1,38 @@
+groups:
+  - name: homelab
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target {{ $labels.job }} / {{ $labels.instance }} is down"
+          description: "The target has been unreachable for more than 5 minutes."
+
+      - alert: RootFilesystemLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"}) < 0.10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Root filesystem has less than 10% free"
+          description: "Root filesystem free space is below 10% for 10 minutes."
+
+      - alert: MemoryAvailableLow
+        expr: node_memory_MemAvailable_bytes < 300 * 1024 * 1024
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Available memory is below 300 MB"
+          description: "The host has less than 300 MB of MemAvailable for 5 minutes."
+
+      - alert: TimeNotSynchronized
+        expr: node_timex_sync_status == 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Host time is not synchronized"
+          description: "node_timex_sync_status has been 0 for 10 minutes."

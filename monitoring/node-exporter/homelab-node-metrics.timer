@@ -1,0 +1,11 @@
+[Unit]
+Description=Run homelab SMART and temperature metrics every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=homelab-node-metrics.service
+
+[Install]
+WantedBy=timers.target

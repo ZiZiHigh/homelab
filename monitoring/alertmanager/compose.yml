@@ -1,0 +1,38 @@
+name: homelab-alertmanager
+
+services:
+  alertmanager:
+    image: prom/alertmanager:v0.34.1
+    restart: unless-stopped
+    user: "1000:1000"
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      - --web.external-url=https://alerts.example.test/
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./data:/alertmanager
+    expose:
+      - "9093"
+    networks:
+      - homelab
+    mem_limit: 96m
+    cpus: "0.20"
+    pids_limit: 128
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9093/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges=true
+
+networks:
+  homelab:
+    external: true

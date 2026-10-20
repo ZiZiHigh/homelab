@@ -1,0 +1,11 @@
+[Unit]
+Description=Homelab SMART and temperature textfile metrics
+Documentation=file:/opt/homelab/monitoring/node-exporter/
+After=local-fs.target
+
+[Service]
+Type=oneshot
+Environment=HOMELAB_TEXTFILE_DIR=/opt/homelab/monitoring/node-exporter/textfile
+Environment=HOMELAB_SMART_DEVICES=/dev/sda
+ExecStart=/usr/bin/python3 /usr/local/lib/homelab/homelab-node-metrics.py
+Nice=10

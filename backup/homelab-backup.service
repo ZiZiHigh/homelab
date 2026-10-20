@@ -1,0 +1,16 @@
+[Unit]
+Description=Homelab restic backup
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/root/.restic-password
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/homelab-backup.sh
+TimeoutStartSec=2h
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Environment=HOME=/root
+Environment=RESTIC_REPOSITORY=sftp:backup-host:/path/to/restic-repo
+Environment=RESTIC_PASSWORD_FILE=/root/.restic-password

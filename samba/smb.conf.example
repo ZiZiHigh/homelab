@@ -1,0 +1,26 @@
+# Sanitized Samba AD DC configuration example.
+# Replace the example.test realm, NetBIOS name, DNS forwarder and paths with
+# private values. Never commit the real realm or credentials.
+#
+# This is not a full Samba provisioning file. It preserves the structure and
+# security-relevant settings of the deployed DC.
+
+[global]
+    restrict anonymous = 2
+    dns forwarder = 192.0.2.53
+    netbios name = EXAMPLE-DC
+    realm = AD.EXAMPLE.TEST
+    server role = active directory domain controller
+    workgroup = EXAMPLE
+    idmap_ldb:use rfc2307 = yes
+
+    # Keep the AD RPC dynamic range small and allow it only from the LAN.
+    rpc server dynamic port range = 49152-49160
+
+[sysvol]
+    path = /var/lib/samba/sysvol
+    read only = No
+
+[netlogon]
+    path = /var/lib/samba/sysvol/ad.example.test/scripts
+    read only = No
