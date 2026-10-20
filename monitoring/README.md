@@ -1,136 +1,72 @@
-# 📊 Monitoring Stack — Prometheus + Grafana + Node Exporter
+# Monitoring
 
-Full server monitoring stack running via Docker Compose on a headless Arch Linux server.
+The monitoring stack is split into separate Compose projects so that one
+service can be restarted without recreating the others. All services join the
+shared external `homelab` network.
 
----
+| Directory | Service | Host port |
+|---|---|---|
+| `grafana/` | Grafana 13.2.4 | none (expose 3000) |
+| `prometheus/` | Prometheus v3.15.0 | none (expose 9090) |
+| `alertmanager/` | Alertmanager v0.34.1 | none (expose 9093) |
+| `node-exporter/` | node-exporter v1.12.1 | none (expose 9100) |
 
-## 🧩 Stack
+Access is through nginx at private placeholders:
 
-| Service | Purpose |
-|---------|---------|
-| Node Exporter | Collects system metrics (CPU, RAM, disk, network) |
-| Prometheus | Scrapes and stores metrics from Node Exporter |
-| Grafana | Visualizes metrics as real-time dashboards |
+- `https://grafana.example.test/`
+- `https://prometheus.example.test/` (LAN only)
+- `https://alerts.example.test/` (LAN only)
 
----
+## Configuration
 
-## 📋 Hardware
+- `prometheus/prometheus.yml` scrapes Prometheus itself, node-exporter and
+  Alertmanager every 15 seconds.
+- `prometheus/alerts.yml` contains alerts for a down target, low root disk,
+  low available memory and unsynchronised time.
+- `alertmanager/alertmanager.yml` currently has a `null` receiver. Alerts are
+  visible in the UI; no email or webhook destination is configured.
+- `node-exporter/homelab-node-metrics.py` exports SMART health, temperature
+  and selected sector counters without model names or serial numbers. The
+  timer runs it every five minutes.
+- `.env.example` is the template for the Grafana admin password. The real
+  `.env` is untracked and mode 600.
 
-| Component | Spec |
-|-----------|------|
-| CPU | Intel Celeron 1000M (2 cores) @ 1.80 GHz |
-| RAM | 3.70 GiB |
-| OS | Arch Linux x86_64 (headless, TTY only) |
+## Grafana secret
 
----
-
-## ⚙️ Installation
-
-**Directory structure**
-```
-~/homelab/monitoring/
-├── docker-compose.yml
-└── prometheus/
-    └── prometheus.yml
-```
-
-**prometheus.yml**
-```yaml
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
-
-  - job_name: 'node'
-    static_configs:
-      - targets: ['node-exporter:9100']
-```
-
-**docker-compose.yml**
-```yaml
-networks:
-  monitoring:
-    driver: bridge
-
-services:
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=changeme
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-  node-exporter:
-    image: prom/node-exporter
-    container_name: node-exporter
-    ports:
-      - "9100:9100"
-    pid: host
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-    networks:
-      - monitoring
-    restart: unless-stopped
-
-volumes:
-  prometheus-data:
-  grafana-data:
-```
-
-**Deploy**
 ```bash
-docker compose up -d
+cp .env.example .env
+chmod 600 .env
+# replace the placeholder with a unique strong password
 ```
 
-**Grafana setup**
-1. Open `http://SERVER_IP:3000` (admin / changeme)
-2. Connections → Data Sources → Add → Prometheus → URL: `http://prometheus:9090`
-3. Dashboards → Import → ID `1860` (Node Exporter Full)
+Do not commit `.env` and do not use a public default password. The Grafana
+container reads it through `env_file`.
 
----
+## Data
 
-## 🐛 Problems & Solutions
+Prometheus and Grafana data live in external Docker volumes. Alertmanager
+data and node-exporter textfile output are private directories and are
+ignored by Git.
 
-No issues encountered. Stack deployed and connected without errors.
+## Start
 
----
+Start each project from its directory:
 
-## 🔧 What Could Be Improved
+```bash
+docker compose -f grafana/compose.yml up -d
+docker compose -f prometheus/compose.yml up -d
+docker compose -f alertmanager/compose.yml up -d
+docker compose -f node-exporter/compose.yml up -d
+```
 
-- [ ] Change default Grafana password via env variable properly
-- [ ] Alert rules in Prometheus (notify when CPU/RAM too high)
-- [ ] Persistent Grafana dashboard config
-- [ ] Restrict Prometheus and Node Exporter ports — expose only to local network
+Verify `docker compose ps`, the container health checks and the private HTTPS
+endpoints. A 302 on Grafana or Prometheus is normally a redirect to the login
+or UI.
 
----
+## Limitations
 
-## 📸 Demo
-
-<!-- Add Grafana dashboard screenshot here -->
-![Grafana Dashboard](demo.png)
+- No notification receiver is configured.
+- The host is a small Celeron machine; retention and memory limits are
+  deliberately modest.
+- The raw `homelab.prom` textfile and monitoring data are not repository
+  content.

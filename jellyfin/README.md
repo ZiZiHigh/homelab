@@ -1,76 +1,46 @@
-# 🎬 Jellyfin Media Server — Self-Hosted on Arch Linux
+# Jellyfin
 
-A self-hosted media server running on a 10+ year old laptop, deployed via Docker on a minimal headless Arch Linux installation.
+Jellyfin runs as a pinned container behind nginx.
 
-> Jellyfin is an open-source alternative to Netflix/Plex — fully local, no subscriptions, no tracking.
-
----
-
-## 📋 Hardware
-
-| Component | Spec |
-|-----------|------|
-| CPU | Intel Celeron 1000M (2 cores) @ 1.80 GHz |
-| GPU | Intel 3rd Gen Core Graphics @ 1.00 GHz |
-| RAM | 3.70 GiB (792 MB available) |
-| OS | Arch Linux x86_64 (headless, TTY only) |
-
----
-
-## ⚙️ Installation
-
-**Prerequisites**
-- Docker
-- Docker Compose
-- Docker service running (`systemctl enable --now docker`)
-
-**Steps**
-
-1. Enable Docker service
-```bash
-systemctl enable --now docker
+```text
+jellyfin/jellyfin:10.11.11
 ```
 
-2. Create `docker-compose.yml` using the official Jellyfin template from [jellyfin.org](https://jellyfin.org/docs/general/installation/container)
+The private hostname is replaced with `https://jellyfin.example.test/` in
+this public copy.
 
-3. Configure UID/GID in the compose file to match your user
-```bash
-id $USER  # get your uid and gid
-```
+## Layout
 
-4. Start the container
+- `compose.yml`: pinned image, resource limits and `no-new-privileges`.
+- `config/`: private Jellyfin state; ignored by Git.
+- `cache/`: private transcode cache; ignored by Git.
+- `media/`: read-only media mount; ignored by Git.
+
+The container runs with UID/GID `1000:1000` and exposes port 8096 only on the
+shared `homelab` network. nginx is the only host-facing proxy.
+
+## Start
+
 ```bash
 docker compose up -d
 ```
 
-5. Access via browser at `http://SERVER_IP:8096`
+Verify through nginx, not by publishing port 8096 to the host.
 
----
+## Current state
 
-## 🐛 Problems & Solutions
+- The first-run wizard is complete.
+- The web UI at `/web/` returns HTTP 200.
+- The public info endpoint reports `StartupWizardCompleted=true`.
+- Media library setup is not documented in this repository. The media tree
+  was not changed beyond the approved test asset.
 
-**Error: `unable to find user uid: no matching entries in passwd file`**
-- **Cause:** UID/GID in `docker-compose.yml` was not set correctly
-- **Fix:** Set `PUID` and `PGID` to match the current user's values (`id $USER`)
+Do not add a library or modify the media directory without a separate
+approval. Hardware transcoding is not configured; the host's Celeron GPU is a
+known limitation.
 
-**Docker daemon not starting**
-- **Cause:** Docker service was not enabled/started
-- **Fix:** `systemctl enable --now docker`
+## Secrets
 
----
-
-## 🔧 What Could Be Improved
-
-- [ ] Reverse proxy (Nginx/Caddy) for cleaner URL access
-- [ ] HTTPS with self-signed certificate
-- [ ] Tailscale VPN for remote access outside local network
-- [ ] Hardware transcoding (limited by Intel Celeron iGPU)
-- [ ] Automatic backups of Jellyfin config
-
----
-
-## 📸 Demo
-
-<!-- Add screenshot or GIF here -->
-![Jellyfin Demo](demo.gif)
-
+Jellyfin has no repository secret in this Compose file. Its state under
+`config/` is private and must not be committed. Backups of the config are
+part of the private backup scope.

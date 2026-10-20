@@ -1,66 +1,46 @@
-# 🔍 SearXNG — Self-Hosted Search Engine
+# SearXNG
 
-A privacy-focused meta search engine running locally via Docker on a headless Arch Linux server.
+SearXNG runs as a pinned private instance behind nginx.
 
-> SearXNG aggregates results from 70+ search engines (Google, Bing, DuckDuckGo...) with no tracking, no ads, and no search history stored anywhere.
-
----
-
-## 📋 Hardware
-
-| Component | Spec |
-|-----------|------|
-| CPU | Intel Celeron 1000M (2 cores) @ 1.80 GHz |
-| GPU | Intel 3rd Gen Core Graphics @ 1.00 GHz |
-| RAM | 3.70 GiB |
-| OS | Arch Linux x86_64 (headless, TTY only) |
-
----
-
-## ⚙️ Installation
-
-**Prerequisites**
-- Docker installed and service running
-- User added to `docker` group (no root needed)
-
-**Steps**
-
-1. Pull the image
-```bash
-docker pull searxng/searxng
+```text
+searxng/searxng:2026.10.19-81371861f
 ```
 
-2. Run the container
+The private hostname is replaced with `https://search.example.test/` in this
+public copy.
+
+## Layout
+
+- `compose.yml`: pinned image, resource limits and `no-new-privileges`.
+- `settings.yml.example`: sanitized configuration template.
+- `config/settings.yml`: real private settings; ignored by Git.
+- `cache/`: private cache; ignored by Git.
+
+The container exposes port 8080 only on the shared `homelab` network.
+
+## Configure
+
 ```bash
-docker run -d \
-  --name searxng \
-  -p 8080:8080 \
-  searxng/searxng
+mkdir -p config
+cp settings.yml.example config/settings.yml
+secret=$(openssl rand -hex 32)
+sed -i "s|__GENERATE_WITH_OPENSSL_RAND_HEX_32__|$secret|" config/settings.yml
+chmod 600 config/settings.yml
 ```
 
-3. Access via browser at `http://SERVER_IP:8080`
+Keep the real `settings.yml` untracked. The secret key is unique to this
+instance and must not be reused.
 
-That's it — no config file needed for basic setup.
+The instance is private: `limiter: false`, `public_instance: false` and
+`image_proxy: false`. Do not expose it to the internet. If the limiter is
+enabled later, add Redis and update the configuration deliberately.
 
----
+## Start and verify
 
-## 🐛 Problems & Solutions
+```bash
+docker compose up -d
+curl -k https://search.example.test/healthz
+```
 
-No issues encountered during setup. Straightforward single-command deployment.
-
----
-
-## 🔧 What Could Be Improved
-
-- [ ] Persistent config volume (`-v`) to survive container restarts
-- [ ] Custom `settings.yml` to enable/disable specific search engines
-- [ ] Reverse proxy (Nginx/Caddy) for cleaner URL
-- [ ] HTTPS with self-signed certificate
-- [ ] Tailscale for remote access outside local network
-
----
-
-## 📸 Demo
-
-<!-- Add screenshot or GIF here -->
-![SearXNG Demo](demo.gif)
+The health endpoint should return a successful response. Searches are
+performed by the container; no API key is stored in this repository.
