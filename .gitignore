@@ -1,0 +1,44 @@
+# Real secrets and environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# TLS material and private keys
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+nginx/certs/*
+!nginx/certs/README.md
+
+# Application state that must not be committed
+jellyfin/config/
+jellyfin/cache/
+jellyfin/media/
+searxng/config/settings.yml
+searxng/cache/
+monitoring/alertmanager/data/
+monitoring/node-exporter/textfile/*.prom
+monitoring/**/data/
+*.sqlite
+*.db
+
+# Logs, temporary files and local backups
+*.log
+*.tmp
+*.bak
+*.bak-*
+*.tar.gz
+*.tgz
+*.zip
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local virtualenvs and editors
+.venv/
+node_modules/
+.idea/
+.vscode/
