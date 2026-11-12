@@ -75,6 +75,18 @@ Only nginx has host port mappings. The other containers are on the internal
 Docker network and are reached through the proxy or directly on the private
 LAN.
 
+## Screenshots
+
+Real screenshots from the running host, taken on 2026-11-12. The UI language is
+Czech because that is how the host is configured.
+
+| Grafana | Prometheus |
+|---|---|
+| ![Grafana Node Exporter dashboard](docs/screenshots/grafana-node-exporter-overview.png) | ![Prometheus target health](docs/screenshots/prometheus-target-health.png) |
+
+All screenshots with captions are in
+[`docs/screenshots/`](docs/screenshots/README.md).
+
 ## What changed
 
 The starting point was not clean. The old public README described a working
@@ -205,6 +217,7 @@ and the security-relevant settings are.
 │   ├── decisions.md
 │   ├── https.md
 │   ├── samba-ad.md
+│   ├── screenshots/        Grafana, Prometheus and SearXNG screenshots
 │   ├── troubleshooting.md
 │   └── update-policy.md
 ├── hardening/              SSH, nftables and fail2ban notes
