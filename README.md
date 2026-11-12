@@ -80,12 +80,12 @@ LAN.
 Real screenshots from the running host, taken on 2026-11-12. The UI language is
 Czech because that is how the host is configured.
 
-| Grafana | Prometheus |
+| Monitoring and alerting | Media and metrics |
 |---|---|
-| ![Grafana Node Exporter dashboard](docs/screenshots/grafana-node-exporter-overview.png) | ![Prometheus target health](docs/screenshots/prometheus-target-health.png) |
-| ![Prometheus alert rules](docs/screenshots/prometheus-alert-rules.png) | ![Alertmanager Watchdog alert](docs/screenshots/alertmanager-watchdog-alert.png) |
-| ![Jellyfin Shows library](docs/screenshots/jellyfin-shows-library.png) | ![Jellyfin series page](docs/screenshots/jellyfin-mr-robot-series.png) |
-| ![Prometheus CPU usage over 24 hours](docs/screenshots/prometheus-cpu-usage-1d.png) | ![Prometheus memory usage over 24 hours](docs/screenshots/prometheus-memory-usage-1d.png) |
+| ![Grafana Node Exporter dashboard](docs/screenshots/grafana-node-exporter-overview.png) | ![Jellyfin Shows library](docs/screenshots/jellyfin-shows-library.png) |
+| ![Prometheus target health](docs/screenshots/prometheus-target-health.png) | ![Jellyfin series page](docs/screenshots/jellyfin-mr-robot-series.png) |
+| ![Prometheus alert rules](docs/screenshots/prometheus-alert-rules.png) | ![Prometheus CPU usage over 24 hours](docs/screenshots/prometheus-cpu-usage-1d.png) |
+| ![Alertmanager Watchdog alert](docs/screenshots/alertmanager-watchdog-alert.png) | ![Prometheus memory usage over 24 hours](docs/screenshots/prometheus-memory-usage-1d.png) |
 
 All screenshots with captions are in
 [`docs/screenshots/`](docs/screenshots/README.md).
