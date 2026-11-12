@@ -36,3 +36,15 @@ groups:
         annotations:
           summary: "Host time is not synchronized"
           description: "node_timex_sync_status has been 0 for 10 minutes."
+
+      # Always firing by design. If this alert is missing, the alerting
+      # pipeline itself is broken: rule evaluation, Prometheus to Alertmanager
+      # delivery, or the Alertmanager route. This is the standard "dead man's
+      # switch" pattern.
+      - alert: Watchdog
+        expr: vector(1)
+        labels:
+          severity: none
+        annotations:
+          summary: "Alerting pipeline is alive"
+          description: "This alert always fires. Its absence means alert delivery is broken."
