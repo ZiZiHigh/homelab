@@ -14,7 +14,9 @@ this public copy.
 - `compose.yml`: pinned image, resource limits and `no-new-privileges`.
 - `config/`: private Jellyfin state; ignored by Git.
 - `cache/`: private transcode cache; ignored by Git.
-- `media/`: read-only media mount; ignored by Git.
+- `media/`: read-only media mount; ignored by Git. In this deployment it is a
+  CIFS mount of a share on another machine, described in
+  [`../docs/media-share.md`](../docs/media-share.md).
 
 The container runs with UID/GID `1000:1000` and exposes port 8096 only on the
 shared `homelab` network. nginx is the only host-facing proxy.

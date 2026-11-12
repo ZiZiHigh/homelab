@@ -37,11 +37,11 @@ a failure.
 | Service | What it does | State |
 |---|---|---|
 | nginx | TLS reverse proxy and HTTP redirect | 1.30.6, ports 80/443, self-signed certificate |
-| Jellyfin | Media server | 10.11.11, first-run wizard complete, media library not documented |
+| Jellyfin | Media server | 10.11.11, two series and 23 episodes indexed from a read-only SMB share |
 | SearXNG | Private search | 2026.10.19 build, no limiter, not public |
 | Grafana | Dashboards | 13.2.4, admin password in untracked `.env` |
-| Prometheus | Metrics collection | v3.15.0, 15-second scrape, alert rules loaded |
-| Alertmanager | Alert routing | v0.34.1, UI only, no receiver configured |
+| Prometheus | Metrics collection | v3.15.0, 15-second scrape, five alert rules loaded |
+| Alertmanager | Alert routing | v0.34.1, Watchdog dead man's switch, no external receiver |
 | node-exporter | Host metrics | v1.12.1, SMART and temperature textfile every 5 minutes |
 | Samba AD | DNS, Kerberos, LDAP and SMB for the lab | Active, anonymous access restricted, functional level 2008 R2 |
 | Avahi | Private `.local` aliases | Active, verified from the host and Android |
@@ -83,6 +83,7 @@ Czech because that is how the host is configured.
 | Grafana | Prometheus |
 |---|---|
 | ![Grafana Node Exporter dashboard](docs/screenshots/grafana-node-exporter-overview.png) | ![Prometheus target health](docs/screenshots/prometheus-target-health.png) |
+| ![Prometheus alert rules](docs/screenshots/prometheus-alert-rules.png) | ![Alertmanager Watchdog alert](docs/screenshots/alertmanager-watchdog-alert.png) |
 
 All screenshots with captions are in
 [`docs/screenshots/`](docs/screenshots/README.md).
@@ -104,7 +105,7 @@ host and the documentation agree.
 | Samba | Anonymous access possible | `restrict anonymous = 2`, password policy applied |
 | `/boot` | World-accessible paths | 0077 masks, 700 permissions, no group/other access |
 | Updates | Ad hoc | `checkupdates`, `arch-audit`, Lynis, `paccache`, written policy |
-| Jellyfin | Wizard pending | Wizard complete, media library not documented |
+| Jellyfin | No media | Two series, 23 episodes, read-only SMB share, TMDb metadata |
 
 The full sequence, including the mistakes and rollbacks, is in
 [`docs/build-log.md`](docs/build-log.md).
@@ -216,6 +217,7 @@ and the security-relevant settings are.
 │   ├── build-log.md
 │   ├── decisions.md
 │   ├── https.md
+│   ├── media-share.md      SMB share, CIFS mount and the Jellyfin library
 │   ├── samba-ad.md
 │   ├── screenshots/        Grafana, Prometheus and SearXNG screenshots
 │   ├── troubleshooting.md
