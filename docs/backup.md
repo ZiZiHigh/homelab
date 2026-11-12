@@ -43,8 +43,9 @@ machine being backed up.
   the same private site.
 - Old AD dumps are not automatically deleted. A retention policy still needs
   to be approved and tested.
-- A full restore drill is not recorded. Until a restore has been tested, the
-  backup should be treated as unproven.
+- A full restore drill has been recorded once, against a copy of the data:
+  see [`restore-drill.md`](restore-drill.md). It does not replace a production
+  restore, which still has to be run from a root shell.
 - The repository password and identifier are secrets. They never belong in a
   report, commit, issue or chat.
 
@@ -72,8 +73,13 @@ A useful restore test would cover:
 3. the Jellyfin configuration, if media is added later;
 4. file permissions and ownership after restore.
 
+A repeatable version of steps 1, 3 and 4 is in
+[`restore-drill.md`](restore-drill.md) and
+[`backup/restore-drill.sh`](../backup/restore-drill.sh).
+
 ## Next steps
 
 1. Add an offsite copy.
 2. Define and test retention for old AD dumps.
-3. Perform and document a full restore drill.
+3. Run the restore drill against the production repository from a root shell
+   and record the result.

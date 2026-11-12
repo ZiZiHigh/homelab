@@ -4,7 +4,8 @@ One old laptop, Arch Linux, Docker, and a small set of services I actually
 use. The lab is deliberately small. It is a place to practise the parts of IT
 support that are easy to read about and annoying to fix for real: DNS that
 half-works, a certificate clients do not trust, a container that starts but
-is not reachable, and a backup that nobody has restored yet.
+is not reachable, and a backup you only trust after restoring it in front of
+an audience.
 
 In plain terms: I run a small server at home, keep the services separated, put
 HTTPS in front, monitor them, back them up and write down what breaks. It is a
@@ -45,7 +46,7 @@ a failure.
 | node-exporter | Host metrics | v1.12.1, SMART and temperature textfile every 5 minutes |
 | Samba AD | DNS, Kerberos, LDAP and SMB for the lab | Active, anonymous access restricted, functional level 2008 R2 |
 | Avahi | Private `.local` aliases | Active, verified from the host and Android |
-| restic | Backup | Daily timer, separate backup host, no offsite copy |
+| restic | Backup | Daily timer, separate backup host, restore drill passed, no offsite copy |
 
 The application containers use the shared external `homelab` Docker network.
 Only nginx publishes host ports. Samba AD, Prometheus and Alertmanager are
@@ -179,7 +180,8 @@ The honest gaps matter more:
   High. At the last check, `arch-audit -u` offered no fixed versions. They are
   not patched.
 - There is no offsite backup, and the old AD dumps are not automatically
-  deleted. A full restore has not been performed.
+  deleted. A restore drill has passed, but only against a copy of the data, not
+  the production repository.
 - NTP precision is not good enough over Wi-Fi.
 - The NixOS client mDNS setup is deferred.
 - Samba AD is still at the Windows 2008 R2 functional level.
@@ -212,7 +214,7 @@ and the security-relevant settings are.
 ├── README.md
 ├── LICENSE
 ├── .gitignore
-├── backup/                 sanitized systemd units for restic
+├── backup/                 sanitized units and the restore drill script
 ├── docs/
 │   ├── audit-2026-10.md
 │   ├── backup.md
@@ -220,6 +222,7 @@ and the security-relevant settings are.
 │   ├── decisions.md
 │   ├── https.md
 │   ├── media-share.md      SMB share, CIFS mount and the Jellyfin library
+│   ├── restore-drill.md    a backup restored and verified, with numbers
 │   ├── samba-ad.md
 │   ├── screenshots/        Grafana, Prometheus and SearXNG screenshots
 │   ├── troubleshooting.md
